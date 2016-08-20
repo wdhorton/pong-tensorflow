@@ -135,7 +135,11 @@
         }
 
         handleData(data) {
-          console.log(data);
+          fetch('/api/game_data', {
+            method: 'POST',
+            body: JSON.stringify(data),
+            headers: { 'Content-Type': 'application/json' },
+          })
         }
 
         start() {

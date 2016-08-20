@@ -7,8 +7,14 @@
   <body>
     <canvas></canvas>
     <script>
+      function getInitialVelocity() {
+        const xVelocity = -1 * (Math.random() * (5 - 3) + 3);
+        const yVelocity = Math.sqrt(50 - (xVelocity * xVelocity));
+        return [xVelocity, Math.random() > 0.5 ? yVelocity : yVelocity * -1]
+      }
+
       class Ball {
-        constructor(position = [Game.DIM_X / 2, (Game.DIM_Y + Paddle.WIDTH + Paddle.SPACE_FROM_WALL) / 2], velocity = [-5, 5], radius = 5) {
+        constructor(position = [Game.DIM_X / 2, (Game.DIM_Y + Paddle.WIDTH + Paddle.SPACE_FROM_WALL) / 2], velocity = getInitialVelocity(), radius = 5) {
           this.position = position;
           this.velocity = velocity;
           this.radius = radius;

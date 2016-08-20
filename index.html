@@ -8,14 +8,17 @@
     <canvas></canvas>
     <script>
       class Ball {
-        constructor(position = [0, 0], velocity = [5, 5], radius = 5) {
+        constructor(position = [Game.DIM_X / 2, (Game.DIM_Y + Paddle.WIDTH + Paddle.SPACE_FROM_WALL) / 2], velocity = [-5, 5], radius = 5) {
           this.position = position;
           this.velocity = velocity;
           this.radius = radius;
         }
 
         checkCollisions(maxX, maxY, paddle1) {
-          if (this.position[0] >= maxX - (this.radius / 2) || this.position[0] <= 0 + (this.radius / 2)) {
+          if (this.position[0] <= 0 + (this.radius / 2)) {
+            return 'PASSED_PADDLE';
+          }
+          if (this.position[0] >= maxX - (this.radius / 2)) {
             this.velocity[0] = -1 * this.velocity[0];
           }
           if (this.position[1] >= maxY - (this.radius/ 2) || this.position[1] <= 0 + (this.radius / 2)) {
@@ -23,6 +26,7 @@
           }
           if (this.position[0] > Paddle.SPACE_FROM_WALL && this.position[0] < Paddle.SPACE_FROM_WALL + Paddle.WIDTH + (this.radius / 2) && this.position[1] >= paddle1.position && this.position[1] <= paddle1.position + Paddle.HEIGHT) {
             this.velocity[0] = -1 * this.velocity[0];
+            return 'GOOD_RETURN';
           }
         }
 
@@ -48,7 +52,7 @@
       }
 
       class Paddle {
-        constructor(position = 0, velocity = 0) {
+        constructor(position = (Game.DIM_Y - Paddle.HEIGHT) / 2, velocity = 0) {
           this.position = position;
           this.velocity = velocity;
         }
@@ -97,7 +101,7 @@
         }
 
         checkCollisions() {
-          this.ball.checkCollisions(Game.DIM_X, Game.DIM_Y, this.paddle1);
+          return this.ball.checkCollisions(Game.DIM_X, Game.DIM_Y, this.paddle1);
         }
 
         bindKeyHandlers() {
@@ -117,13 +121,42 @@
           };
         }
 
+        resetBall() {
+          this.ball = new Ball()
+        }
+
+        getCurrentData() {
+          return {
+            paddle_velocity: this.paddle1.velocity,
+            paddle_position: this.paddle1.position,
+            ball_velocity: this.ball.velocity,
+            ball_position: this.ball.position,
+          }
+        }
+
+        handleData(data) {
+          console.log(data);
+        }
+
         start() {
           this.bindKeyHandlers();
+          let data = [];
 
           const animateCallback = () => {
             this.ball.move();
             this.paddle1.move();
-            this.checkCollisions();
+            const collisionType = this.checkCollisions();
+            if (collisionType) {
+              if (collisionType === 'PASSED_PADDLE') {
+                setTimeout(() => this.resetBall(), 500);
+                data = [];
+              }
+              if (collisionType === 'GOOD_RETURN') {
+                this.handleData(data);
+                data = [];
+              }
+            }
+            data.push(this.getCurrentData());
             this.render();
             requestAnimationFrame(animateCallback);
           };

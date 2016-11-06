@@ -135,8 +135,10 @@
           return {
             paddle_velocity: this.paddle1.velocity,
             paddle_position: this.paddle1.position,
-            ball_velocity: this.ball.velocity,
-            ball_position: this.ball.position,
+            ball_x_velocity: this.ball.velocity[0],
+            ball_y_velocity: this.ball.velocity[1],
+            ball_x_position: this.ball.position[0],
+            ball_y_position: this.ball.position[1],
           }
         }
 

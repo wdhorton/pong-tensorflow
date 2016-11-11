@@ -8,8 +8,6 @@
   <body>
     <canvas></canvas>
     <script>
-      const socket = io.connect('http://' + document.domain + ':' + location.port);
-
       function getInitialVelocity() {
         const xVelocity = -1 * (Math.random() * (5 - 3) + 3);
         const yVelocity = Math.sqrt(50 - (xVelocity * xVelocity));
@@ -24,18 +22,34 @@
         }
 
         checkCollisions(maxX, maxY, paddle1) {
-          if (this.position[0] <= 0 + (this.radius / 2)) {
-            return 'PASSED_PADDLE';
-          }
-          if (this.position[0] >= maxX - (this.radius / 2)) {
-            this.velocity[0] = -1 * this.velocity[0];
-          }
-          if (this.position[1] >= maxY - (this.radius/ 2) || this.position[1] <= 0 + (this.radius / 2)) {
-            this.velocity[1] = -1 * this.velocity[1];
-          }
-          if (this.position[0] > Paddle.SPACE_FROM_WALL && this.position[0] < Paddle.SPACE_FROM_WALL + Paddle.WIDTH + (this.radius / 2) && this.position[1] >= paddle1.position && this.position[1] <= paddle1.position + Paddle.HEIGHT) {
-            this.velocity[0] = -1 * this.velocity[0];
-            return 'GOOD_RETURN';
+          if (paddle1.side === 'left') {
+            if (this.position[0] <= 0 + (this.radius / 2)) {
+              return 'PASSED_PADDLE';
+            }
+            if (this.position[0] >= maxX - (this.radius / 2)) {
+              this.velocity[0] = -1 * this.velocity[0];
+            }
+            if (this.position[1] >= maxY - (this.radius/ 2) || this.position[1] <= 0 + (this.radius / 2)) {
+              this.velocity[1] = -1 * this.velocity[1];
+            }
+            if (this.position[0] > Paddle.SPACE_FROM_WALL && this.position[0] < Paddle.SPACE_FROM_WALL + Paddle.WIDTH + (this.radius / 2) && this.position[1] >= paddle1.position && this.position[1] <= paddle1.position + Paddle.HEIGHT) {
+              this.velocity[0] = -1 * this.velocity[0];
+              return 'GOOD_RETURN';
+            }
+          } else {
+            if (this.position[0] <= 0 + (this.radius / 2) + Paddle.WIDTH + Paddle.SPACE_FROM_WALL) {
+              this.velocity[0] = -1 * this.velocity[0];
+            }
+            if (this.position[0] >= maxX - (this.radius / 2)) {
+              return 'PASSED_PADDLE';
+            }
+            if (this.position[1] >= maxY - (this.radius/ 2) || this.position[1] <= 0 + (this.radius / 2)) {
+              this.velocity[1] = -1 * this.velocity[1];
+            }
+            if (this.position[0] < maxX - Paddle.SPACE_FROM_WALL && this.position[0] > maxX - (Paddle.SPACE_FROM_WALL + Paddle.WIDTH + (this.radius / 2)) && this.position[1] >= paddle1.position && this.position[1] <= paddle1.position + Paddle.HEIGHT) {
+              this.velocity[0] = -1 * this.velocity[0];
+              return 'GOOD_RETURN';
+            }
           }
         }
 
@@ -61,14 +75,16 @@
       }
 
       class Paddle {
-        constructor(position = (Game.DIM_Y - Paddle.HEIGHT) / 2, velocity = 0) {
+        constructor(position = (Game.DIM_Y - Paddle.HEIGHT) / 2, velocity = 0, side = 'right') {
           this.position = position;
           this.velocity = velocity;
+          this.xPosition = side === 'left' ? Paddle.SPACE_FROM_WALL : Game.DIM_X - Paddle.SPACE_FROM_WALL - Paddle.WIDTH;
+          this.side = side;
         }
 
         render(ctx) {
           ctx.fillStyle = 'white';
-          ctx.fillRect(Paddle.SPACE_FROM_WALL, this.position, Paddle.WIDTH, Paddle.HEIGHT);
+          ctx.fillRect(this.xPosition, this.position, Paddle.WIDTH, Paddle.HEIGHT);
         }
 
         move() {
@@ -78,12 +94,10 @@
         }
 
         moveUp() {
-          console.log('moving up!')
           this.velocity = -5;
         }
 
         moveDown() {
-          console.log('moving down!')
           this.velocity = 5;
         }
 
@@ -107,6 +121,8 @@
           this.ctx.clearRect(0, 0, Game.DIM_X, Game.DIM_Y);
           this.ctx.fillStyle = Game.BG_COLOR;
           this.ctx.fillRect(0, 0, Game.DIM_X, Game.DIM_Y);
+          this.ctx.fillStyle = 'white';
+          this.ctx.fillRect(0, 0, Paddle.WIDTH + Paddle.SPACE_FROM_WALL, Game.DIM_Y);
           this.ball.render(this.ctx);
           this.paddle1.render(this.ctx);
         }
@@ -183,7 +199,7 @@
         }
       }
 
-      Game.DIM_X = 600 - Paddle.WIDTH - Paddle.SPACE_FROM_WALL;
+      Game.DIM_X = 600;
       Game.DIM_Y = 400;
       Game.BG_COLOR = 'black';
 
@@ -195,10 +211,6 @@
         const ctx = canvasEl.getContext("2d");
         game = new Game(ctx);
         game.start();
-        setInterval(() => socket.emit('current data', game.getCurrentData()), 200)
-        socket.on('move', data => {
-          console.log(data);
-        })
       });
     </script>
   </body>

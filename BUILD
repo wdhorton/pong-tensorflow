@@ -16,8 +16,3 @@ py_binary(
         "@tf_serving//tensorflow_serving/apis:prediction_service_proto_py_pb2",
     ]
 )
-
-local_repository(
-    name = "tf_serving,
-    path = "serving",
-)

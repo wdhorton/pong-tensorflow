@@ -3,7 +3,6 @@ from flask_socketio import SocketIO, emit
 from pymongo import MongoClient
 import numpy as np
 
-from train_model import train_model
 from model_client import make_prediction
 
 PONG_DB_NAME = 'pong'

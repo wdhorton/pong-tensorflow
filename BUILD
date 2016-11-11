@@ -1,14 +1,23 @@
 py_binary(
-    name = "train_model_2",
+    name = "server",
     srcs = [
-        "train_model_2.py",
+        "server.py",
     ],
     deps = [
-        ":load_data"
+        ":model_client"
     ],
 )
 
 py_binary(
-    name = "load_data",
-    srcs = ["load_data.py"]
+    name = "model_client",
+    srcs = ["model_client.py"],
+    deps = [
+        "@tf_serving//tensorflow_serving/apis:predict_proto_py_pb2",
+        "@tf_serving//tensorflow_serving/apis:prediction_service_proto_py_pb2",
+    ]
+)
+
+local_repository(
+    name = "tf_serving,
+    path = "serving",
 )

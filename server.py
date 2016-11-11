@@ -4,6 +4,7 @@ from pymongo import MongoClient
 import numpy as np
 
 from train_model import train_model
+from model_client import make_prediction
 
 PONG_DB_NAME = 'pong'
 COLLECTION_NAME = 'game_data'
@@ -12,16 +13,23 @@ app = Flask(__name__, static_folder='')
 socketio = SocketIO(app)
 
 game_data = MongoClient()[PONG_DB_NAME][COLLECTION_NAME]
-classifier = train_model()
 
 @app.route('/')
 def root():
   return app.send_static_file('index.html')
 
+@app.route('/train')
+def train():
+  return app.send_static_file('train.html')
+
+@app.route('/play')
+def play():
+  return app.send_static_file('play.html')
+
 @app.route('/api/game_data', methods=['POST'])
 def write_data():
   data = request.get_json()
-  # game_data.insert_many(data)
+  game_data.insert_many(data)
   return 'ok'
 
 @socketio.on('current data')
@@ -34,9 +42,9 @@ def handle_new_data(json):
     json["paddle_position"]
   ], dtype=np.float32)
 
-  prediction = classifier.predict(new_sample)
+  prediction = make_prediction(new_sample)
   print prediction
-  emit('move', { 'move': prediction[0] })
+  emit('move', { 'move': prediction })
 
 
 if __name__ == "__main__":

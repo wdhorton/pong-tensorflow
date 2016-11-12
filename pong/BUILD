@@ -16,3 +16,18 @@ py_binary(
         "@tf_serving//tensorflow_serving/apis:prediction_service_proto_py_pb2",
     ]
 )
+
+py_binary(
+    name="train_model_2",
+    srcs = ["train_model_2.py"],
+    deps = [
+        ":load_data",
+        "@org_tensorflow//tensorflow:tensorflow_py",
+        "@org_tensorflow//tensorflow/contrib/session_bundle:exporter"
+    ]
+)
+
+py_binary(
+    name="load_data",
+    srcs=["load_data.py"]
+)

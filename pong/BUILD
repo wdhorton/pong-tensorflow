@@ -12,6 +12,7 @@ py_binary(
     name = "model_client",
     srcs = ["model_client.py"],
     deps = [
+        "@org_tensorflow//tensorflow:tensorflow_py",
         "@tf_serving//tensorflow_serving/apis:predict_proto_py_pb2",
         "@tf_serving//tensorflow_serving/apis:prediction_service_proto_py_pb2",
     ]

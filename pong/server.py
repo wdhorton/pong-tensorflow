@@ -1,29 +1,30 @@
-from flask import Flask, request
+from flask import Flask, request, send_from_directory
 from flask_socketio import SocketIO, emit
 from pymongo import MongoClient
 import numpy as np
+import os
 
 from model_client import make_prediction
 
 PONG_DB_NAME = 'pong'
 COLLECTION_NAME = 'game_data'
 
-app = Flask(__name__, static_folder='')
+app = Flask(__name__)
 socketio = SocketIO(app)
 
 game_data = MongoClient()[PONG_DB_NAME][COLLECTION_NAME]
 
 @app.route('/')
 def root():
-  return app.send_static_file('index.html')
+  return send_from_directory(os.path.join(os.getcwd(), 'pong'), 'index.html')
 
 @app.route('/train')
 def train():
-  return app.send_static_file('train.html')
+  return send_from_directory(os.path.join(os.getcwd(), 'pong'), 'train.html')
 
 @app.route('/play')
 def play():
-  return app.send_static_file('play.html')
+  return send_from_directory(os.path.join(os.getcwd(), 'pong'), 'play.html')
 
 @app.route('/api/game_data', methods=['POST'])
 def write_data():

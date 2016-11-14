@@ -182,6 +182,7 @@
             }
             // const currentData = this.getCurrentData()
             // data.push(currentData);
+            socket.emit('current data', this.getCurrentData())
             this.render();
             requestAnimationFrame(animateCallback);
           };
@@ -202,7 +203,6 @@
         const ctx = canvasEl.getContext("2d");
         game = new Game(ctx);
         game.start();
-        setInterval(() => socket.emit('current data', game.getCurrentData()), 200)
         socket.on('move', data => {
           console.log(data)
           if (data.move === 0) {

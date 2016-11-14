@@ -144,8 +144,8 @@
 
         getCurrentData() {
           return {
-            paddle_velocity: this.paddle1.velocity,
-            paddle_position: this.paddle1.position,
+            paddle_velocity: this.paddle2.velocity,
+            paddle_position: this.paddle2.position,
             ball_x_velocity: this.ball.velocity[0],
             ball_y_velocity: this.ball.velocity[1],
             ball_x_position: this.ball.position[0],
@@ -204,7 +204,14 @@
         game.start();
         setInterval(() => socket.emit('current data', game.getCurrentData()), 200)
         socket.on('move', data => {
-          console.log(data);
+          console.log(data)
+          if (data.move === 0) {
+            game.paddle2.moveUp();
+          } else if (data.move === 1) {
+            game.paddle2.stop();
+          } else if (data.move === 2) {
+            game.paddle2.moveDown();
+          }
         })
       });
     </script>

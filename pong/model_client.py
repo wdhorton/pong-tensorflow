@@ -11,7 +11,7 @@ def make_prediction(data):
   request = predict_pb2.PredictRequest()
   request.model_spec.name = 'pong_model'
   request.inputs['data'].CopyFrom(
-      tf.contrib.util.make_tensor_proto(data))
+      tf.contrib.util.make_tensor_proto(data, shape=[1, data.size]))
   result = stub.Predict(request, 1.0)
   return result
 

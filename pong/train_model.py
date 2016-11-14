@@ -27,3 +27,6 @@ def train_model():
   accuracy_score = classifier.evaluate(x=test_set.data,
                                        y=test_set.target)["accuracy"]
   print('Accuracy: {0:f}'.format(accuracy_score))
+
+if __name__ == '__main__':
+  train_model()

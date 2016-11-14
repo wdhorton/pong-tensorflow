@@ -13,7 +13,7 @@ def make_prediction(data):
   request.inputs['data'].CopyFrom(
       tf.contrib.util.make_tensor_proto(data, shape=[1, data.size]))
   response = stub.Predict(request, 1.0)
-  prediction = numpy.argmax(response)
+  prediction = np.argmax(response)
   return prediction
 
 if __name__ == '__main__':

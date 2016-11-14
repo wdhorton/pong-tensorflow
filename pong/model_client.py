@@ -13,9 +13,7 @@ def make_prediction(data):
   request.inputs['data'].CopyFrom(
       tf.contrib.util.make_tensor_proto(data, shape=[1, data.size]))
   response = stub.Predict(request, 1.0)
-  print response
-  print np.array(response.outputs['data'].float_val)
-  prediction = np.argmax(response)
+  prediction = np.argmax(np.array(response.outputs['move'].float_val))
   return prediction
 
 if __name__ == '__main__':

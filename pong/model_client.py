@@ -18,7 +18,9 @@ def make_prediction(data):
 
 if __name__ == '__main__':
   from pymongo import MongoClient
-
+  PONG_DB_NAME = 'pong'
+  COLLECTION_NAME = 'game_data'
+  game_data = MongoClient()[PONG_DB_NAME][COLLECTION_NAME]
   rows = game_data.find().limit(100)
 
   for row in rows:

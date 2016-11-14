@@ -14,9 +14,9 @@ socketio = SocketIO(app)
 
 game_data = MongoClient()[PONG_DB_NAME][COLLECTION_NAME]
 
-@app.route('/')
-def root():
-  return send_from_directory(os.path.join(os.getcwd(), 'pong'), 'index.html')
+# @app.route('/')
+# def root():
+#   return send_from_directory(os.path.join(os.getcwd(), 'pong'), 'index.html')
 
 @app.route('/train')
 def train():

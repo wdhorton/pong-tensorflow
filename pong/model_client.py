@@ -17,19 +17,29 @@ def make_prediction(data):
   return prediction
 
 if __name__ == '__main__':
-  json = {
-    	"ball_y_velocity" : -5.900753227819585,
-    	"paddle_position" : 187.5,
-    	"ball_x_position" : 210.38522498396122,
-    	"ball_y_position" : 76.78267576014937,
-    	"ball_x_velocity" : -3.896294565914742,
-  }
-  new_sample = np.array([
-    json["ball_x_velocity"],
-    json["ball_y_velocity"],
-    json["ball_x_position"],
-    json["ball_y_position"],
-    json["paddle_position"]
-  ], dtype=np.float32)
+  from pymongo import MongoClient
 
-  print make_prediction(new_sample)
+  rows = game_data.find().limit(100)
+
+  for row in rows:
+    # Classes: UP -- 0, STATIONARY -- 1, DOWN -- 2
+    if row['paddle_velocity'] < 0:
+      target = np.array([1, 0, 0])
+    elif row['paddle_velocity'] == 0:
+      target = np.array([0, 1, 0])
+    else:
+      target = np.array([0, 0, 1])
+
+    row_data = [
+      row["ball_x_velocity"],
+      row["ball_y_velocity"],
+      row["ball_x_position"],
+      row["ball_y_position"],
+    	row["paddle_position"]
+    ]
+    new_sample = np.asarray(row_data, dtype=np.float32)
+
+    print 'Predicted:'
+    print make_prediction(new_sample)
+    print 'Actual:'
+    print np.argmax(target)

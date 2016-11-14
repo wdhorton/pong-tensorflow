@@ -12,8 +12,9 @@ def make_prediction(data):
   request.model_spec.name = 'pong_model'
   request.inputs['data'].CopyFrom(
       tf.contrib.util.make_tensor_proto(data, shape=[1, data.size]))
-  result = stub.Predict(request, 1.0)
-  return result
+  response = stub.Predict(request, 1.0)
+  prediction = numpy.argmax(response)
+  return prediction
 
 if __name__ == '__main__':
   json = {

@@ -83,10 +83,12 @@ def make_training_and_test_sets(one_hot=False):
 
   rows = chain(up_rows, down_rows, stationary_rows)
 
+  num_rows = up_rows.count() + down_rows.count() + stationary_rows.count()
+
   training_data, training_target = [], []
   test_data, test_target = [], []
   for i, row in enumerate(rows):
-    if random() > 0.8:
+    if i < int(num_rows * 0.8):
       target = training_target
       data = training_data
     else:

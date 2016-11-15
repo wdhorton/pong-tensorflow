@@ -4,6 +4,7 @@ import tensorflow.python.platform
 
 import numpy as np
 import tensorflow as tf
+from tensorflow.contrib.session_bundle import exporter
 
 from load_data import make_training_and_test_sets
 
@@ -16,6 +17,7 @@ tf.app.flags.DEFINE_integer('num_epochs', 1,
 tf.app.flags.DEFINE_integer('num_hidden', 1,
                             'Number of nodes in the hidden layer.')
 tf.app.flags.DEFINE_boolean('verbose', False, 'Produce verbose output.')
+tf.app.flags.DEFINE_string('export_path', '/tmp/pong_model', 'Model export path.')
 FLAGS = tf.app.flags.FLAGS
 
 # Init weights method. (Lifted from Delip Rao: http://deliprao.com/archives/100)
@@ -110,6 +112,16 @@ def main(argv=None):
     	    if verbose and offset >= train_size-BATCH_SIZE:
     	        print
     	print "Accuracy:", accuracy.eval(feed_dict={x: test_data, y_: test_labels})
+
+        print 'Exporting trained model to', FLAGS.export_path
+        saver = tf.train.Saver(sharded=True)
+        model_exporter = exporter.Exporter(saver)
+        model_exporter.init(
+          s.graph.as_graph_def(),
+          named_graph_signatures={
+              'inputs': exporter.generic_signature({'data': x}),
+              'outputs': exporter.generic_signature({'move': y})})
+        model_exporter.export(FLAGS.export_path, tf.constant(1), s)
 
 if __name__ == '__main__':
     tf.app.run()

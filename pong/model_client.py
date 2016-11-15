@@ -5,6 +5,8 @@ import numpy as np
 from tensorflow_serving.apis import predict_pb2
 from tensorflow_serving.apis import prediction_service_pb2
 
+from load_data import scale_features
+
 def make_prediction(data):
   channel = implementations.insecure_channel('localhost', 9000)
   stub = prediction_service_pb2.beta_create_PredictionService_stub(channel)
@@ -32,13 +34,7 @@ if __name__ == '__main__':
     else:
       target = np.array([0, 0, 1])
 
-    row_data = [
-      row["ball_x_velocity"],
-      row["ball_y_velocity"],
-      row["ball_x_position"],
-      row["ball_y_position"],
-    	row["paddle_position"]
-    ]
+    row_data = scale_features(row)
     new_sample = np.asarray(row_data, dtype=np.float32)
 
     print 'Predicted:'

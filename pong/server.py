@@ -5,6 +5,7 @@ import numpy as np
 import os
 
 from model_client import make_prediction
+from load_data import scale_features
 
 PONG_DB_NAME = 'pong'
 COLLECTION_NAME = 'game_data'
@@ -34,13 +35,7 @@ def write_data():
 
 @socketio.on('current data')
 def handle_new_data(json):
-  new_sample = np.array([
-    json["ball_x_velocity"],
-    json["ball_y_velocity"],
-    json["ball_x_position"],
-    json["ball_y_position"],
-    json["paddle_position"]
-  ], dtype=np.float32)
+  new_sample = np.array(scale_features(json), dtype=np.float32)
 
   prediction = make_prediction(new_sample)
   print prediction

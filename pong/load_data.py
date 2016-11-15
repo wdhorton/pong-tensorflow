@@ -1,9 +1,32 @@
 import collections
 import numpy as np
 from pymongo import MongoClient
+from math import sqrt
 
 PONG_DB_NAME = 'pong'
 COLLECTION_NAME = 'game_data'
+
+MAX_Y_POSITION = 400
+MIN_Y_POSITION = 0
+MAX_X_POSITION = 600
+MIN_X_POSITION = 0
+MAX_X_VELOCITY = 5
+MIN_X_VELOCITY = -5
+MAX_Y_VELOCITY = sqrt(50 - 9)
+MIN_Y_VELOCITY = -1 * sqrt(50 - 9)
+
+def min_max_scale(x, x_min, x_max):
+  return (x - x_min) / (x_max - x_min)
+
+def scale_features(row):
+  return [
+    min_max_scale(row["ball_x_velocity"], MIN_X_VELOCITY, MAX_X_VELOCITY),
+    min_max_scale(row["ball_y_velocity"], MIN_Y_VELOCITY, MAX_Y_VELOCITY),
+    min_max_scale(row["ball_x_position"], MIN_X_POSITION, MAX_X_POSITION),
+    min_max_scale(row["ball_y_position"], MIN_Y_POSITION, MAX_Y_POSITION),
+    min_max_scale(row["paddle_position"], MIN_Y_POSITION, MAX_Y_POSITION)
+  ]
+
 
 # Dataset class adapted from https://github.com/tensorflow/tensorflow/blob/r0.11/tensorflow/contrib/learn/python/learn/datasets/mnist.py
 class DataSet(object):
@@ -72,13 +95,7 @@ def make_training_and_test_sets(one_hot=False):
     else:
       target.append(2 if not one_hot else np.array([0, 0, 1]))
 
-    row_data = [
-      row["ball_x_velocity"],
-      row["ball_y_velocity"],
-      row["ball_x_position"],
-      row["ball_y_position"],
-    	row["paddle_position"]
-    ]
+    row_data = scale_features(row)
     data.append(np.asarray(row_data, dtype=np.float32))
 
   training_target = np.array(training_target, dtype=np.int)

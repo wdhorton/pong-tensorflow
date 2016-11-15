@@ -31,6 +31,15 @@ py_binary(
 )
 
 py_binary(
+    name="train_model_hidden",
+    srcs = ["train_model_hidden.py"],
+    deps = [
+        ":load_data",
+        "@org_tensorflow//tensorflow:tensorflow_py"
+    ]
+)
+
+py_binary(
     name="train_model",
     srcs = ["train_model.py"],
     deps = [

@@ -3,6 +3,9 @@ import numpy as np
 from pymongo import MongoClient
 from math import sqrt
 
+from itertools import chain
+from random import random
+
 PONG_DB_NAME = 'pong'
 COLLECTION_NAME = 'game_data'
 
@@ -74,13 +77,16 @@ class DataSet(object):
 
 def make_training_and_test_sets(one_hot=False):
   game_data = MongoClient()[PONG_DB_NAME][COLLECTION_NAME]
-  rows = game_data.find()
-  num_rows = game_data.count()
+  up_rows = game_data.find({ 'paddle_velocity': { '$lt': 0 } })
+  down_rows = game_data.find({ 'paddle_velocity': { '$gt': 0 } })
+  stationary_rows = game_data.find({ 'paddle_velocity': 0 }).limit(max(up_rows.count(), down_rows.count()))
+
+  rows = chain(up_rows, down_rows, stationary_rows)
 
   training_data, training_target = [], []
   test_data, test_target = [], []
   for i, row in enumerate(rows):
-    if i < int(num_rows * 0.8):
+    if random() > 0.8:
       target = training_target
       data = training_data
     else:

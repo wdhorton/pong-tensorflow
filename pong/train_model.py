@@ -12,8 +12,8 @@ import tensorflow as tf
 from tensorflow.contrib.session_bundle import exporter
 
 def signature_fn(examples, features, predictions):
-  return {}, {
-    'inputs': exporter.generic_signature({'data': examples}),
+  return None, {
+    'inputs': exporter.generic_signature({'data': tf.placeholder(tf.float32, [None, 5])}),
     'outputs': exporter.generic_signature({'move': predictions})
   }
 

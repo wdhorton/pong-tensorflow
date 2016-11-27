@@ -10,6 +10,12 @@ from load_data import make_training_and_test_sets
 
 import tensorflow as tf
 
+def signature_fn(examples, features, predictions):
+  return {}, {
+    'inputs': exporter.generic_signature({'data': examples}),
+    'outputs': exporter.generic_signature({'move': predictions})
+  }
+
 def train_model():
   training_set, test_set = make_training_and_test_sets()
 
@@ -29,7 +35,7 @@ def train_model():
   accuracy_score = classifier.evaluate(x=test_set.data,
                                        y=test_set.target)["accuracy"]
   print('Accuracy: {0:f}'.format(accuracy_score))
-  classifier.export('/tmp/pong_model')
+  classifier.export('/tmp/pong_model', signature_fn=signature_fn)
 
 if __name__ == '__main__':
   train_model()

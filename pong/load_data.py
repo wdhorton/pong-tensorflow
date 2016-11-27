@@ -75,15 +75,18 @@ class DataSet(object):
     end = self._index_in_epoch
     return self._data[start:end], self._target[start:end]
 
-def make_training_and_test_sets(one_hot=False):
+def make_training_and_test_sets(one_hot=False, balanced=False):
   game_data = MongoClient()[PONG_DB_NAME][COLLECTION_NAME]
-  up_rows = game_data.find({ 'paddle_velocity': { '$lt': 0 } })
-  down_rows = game_data.find({ 'paddle_velocity': { '$gt': 0 } })
-  stationary_rows = game_data.find({ 'paddle_velocity': 0 }).limit(max(up_rows.count(), down_rows.count()))
+  if balanced:
+    up_rows = game_data.find({ 'paddle_velocity': { '$lt': 0 } })
+    down_rows = game_data.find({ 'paddle_velocity': { '$gt': 0 } })
+    stationary_rows = game_data.find({ 'paddle_velocity': 0 }).limit(max(up_rows.count(), down_rows.count()))
 
-  rows = chain(up_rows, down_rows, stationary_rows)
-
-  num_rows = up_rows.count() + down_rows.count() + stationary_rows.count()
+    rows = chain(up_rows, down_rows, stationary_rows)
+    num_rows = up_rows.count() + down_rows.count() + stationary_rows.count()
+  else:
+    rows = game_data.find()
+    num_rows = rows.count()
 
   training_data, training_target = [], []
   test_data, test_target = [], []

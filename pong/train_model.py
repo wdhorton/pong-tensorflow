@@ -4,6 +4,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import tempfile
+
 from load_data import make_training_and_test_sets
 
 import tensorflow as tf
@@ -18,7 +20,7 @@ def train_model():
   classifier = tf.contrib.learn.DNNClassifier(feature_columns=feature_columns,
                                               hidden_units=[10, 20, 10],
                                               n_classes=3,
-                                              model_dir="/tmp/pong_model")
+                                              model_dir=tempfile.mkdtemp())
 
   # Fit model
   classifier.fit(x=training_set.data, y=training_set.target, steps=2000)
@@ -27,6 +29,7 @@ def train_model():
   accuracy_score = classifier.evaluate(x=test_set.data,
                                        y=test_set.target)["accuracy"]
   print('Accuracy: {0:f}'.format(accuracy_score))
+  classifier.export('/tmp/pong_model')
 
 if __name__ == '__main__':
   train_model()

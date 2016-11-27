@@ -46,6 +46,7 @@ py_binary(
     deps = [
         ":load_data",
         "@org_tensorflow//tensorflow:tensorflow_py",
+        "@org_tensorflow//tensorflow/contrib/session_bundle:exporter"
     ]
 )
 

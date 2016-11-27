@@ -9,6 +9,7 @@ import tempfile
 from load_data import make_training_and_test_sets
 
 import tensorflow as tf
+from tensorflow.contrib.session_bundle import exporter
 
 def signature_fn(examples, features, predictions):
   return {}, {

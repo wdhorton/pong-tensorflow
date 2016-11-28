@@ -23,13 +23,20 @@ def min_max_scale(x, x_min, x_max):
   return (x - x_min) / (x_max - x_min)
 
 def scale_features(row):
-  return [
+  base = [
     min_max_scale(row["ball_x_velocity"], MIN_X_VELOCITY, MAX_X_VELOCITY),
     min_max_scale(row["ball_y_velocity"], MIN_Y_VELOCITY, MAX_Y_VELOCITY),
     min_max_scale(row["ball_x_position"], MIN_X_POSITION, MAX_X_POSITION),
     min_max_scale(row["ball_y_position"], MIN_Y_POSITION, MAX_Y_POSITION),
     min_max_scale(row["paddle_position"], MIN_Y_POSITION, MAX_Y_POSITION)
   ]
+  base.extend[
+    base[0] * base[1]
+    base[2] * base[3]
+    base[0] * base[1] * base[2] * base[3]
+    base[0] * base[1] * base[2] * base[3] * base[4]
+  ]
+  return base
 
 
 # Dataset class adapted from https://github.com/tensorflow/tensorflow/blob/r0.11/tensorflow/contrib/learn/python/learn/datasets/mnist.py

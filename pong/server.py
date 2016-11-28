@@ -50,7 +50,6 @@ def handle_new_data(json):
   new_sample = np.array(scale_features(json), dtype=np.float32)
 
   prediction = make_prediction(new_sample)
-  print prediction
   emit('move', { 'move': prediction })
 
 

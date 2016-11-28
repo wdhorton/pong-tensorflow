@@ -30,12 +30,12 @@ def scale_features(row):
     min_max_scale(row["ball_y_position"], MIN_Y_POSITION, MAX_Y_POSITION),
     min_max_scale(row["paddle_position"], MIN_Y_POSITION, MAX_Y_POSITION)
   ]
-  base.extend[
+  base.extend([
     base[0] * base[1],
     base[2] * base[3],
     base[0] * base[1] * base[2] * base[3],
     base[0] * base[1] * base[2] * base[3] * base[4]
-  ]
+  ])
   return base
 
 

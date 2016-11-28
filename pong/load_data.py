@@ -8,6 +8,7 @@ from random import random
 
 PONG_DB_NAME = 'pong'
 COLLECTION_NAME = 'game_data'
+BINARY_COLLECTION_NAME = 'game_data_binary'
 
 MAX_Y_POSITION = 400
 MIN_Y_POSITION = 0
@@ -75,8 +76,8 @@ class DataSet(object):
     end = self._index_in_epoch
     return self._data[start:end], self._target[start:end]
 
-def make_training_and_test_sets(one_hot=False, balanced=False):
-  game_data = MongoClient()[PONG_DB_NAME][COLLECTION_NAME]
+def make_training_and_test_sets(one_hot=False, balanced=False, binary=False):
+  game_data = MongoClient()[PONG_DB_NAME][COLLECTION_NAME if not binary else BINARY_COLLECTION_NAME]
   if balanced:
     up_rows = game_data.find({ 'paddle_velocity': { '$lt': 0 } })
     down_rows = game_data.find({ 'paddle_velocity': { '$gt': 0 } })
@@ -100,11 +101,13 @@ def make_training_and_test_sets(one_hot=False, balanced=False):
 
     # Classes: UP -- 0, STATIONARY -- 1, DOWN -- 2
     if row['paddle_velocity'] < 0:
-      target.append(0 if not one_hot else np.array([1, 0, 0]))
+      target.append(0 if not one_hot else (np.array([1, 0, 0]) if not binary else np.array([1, 0])))
     elif row['paddle_velocity'] == 0:
+      if binary:
+        raise
       target.append(1 if not one_hot else np.array([0, 1, 0]))
     else:
-      target.append(2 if not one_hot else np.array([0, 0, 1]))
+      target.append(2 if not one_hot else (np.array([0, 0, 1]) if not binary else np.array([0, 1])))
 
     row_data = scale_features(row)
     data.append(np.asarray(row_data, dtype=np.float32))

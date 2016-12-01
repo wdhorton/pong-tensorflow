@@ -5,7 +5,7 @@ import numpy as np
 import os
 
 from model_client import make_prediction
-from load_data import scale_features
+from training.load_data import scale_features
 
 PONG_DB_NAME = 'pong'
 COLLECTION_NAME = 'game_data'
@@ -17,21 +17,17 @@ socketio = SocketIO(app)
 game_data = MongoClient()[PONG_DB_NAME][COLLECTION_NAME]
 game_data_binary = MongoClient()[PONG_DB_NAME][BINARY_COLLECTION_NAME]
 
-# @app.route('/')
-# def root():
-#   return send_from_directory(os.path.join(os.getcwd(), 'pong'), 'index.html')
+@app.route('/')
+def root():
+  return send_from_directory(os.path.join(os.getcwd(), 'pong/static'), 'index.html')
 
 @app.route('/train')
-def train():
-  return send_from_directory(os.path.join(os.getcwd(), 'pong'), 'train.html')
-
-@app.route('/train_binary')
 def train_binary():
-  return send_from_directory(os.path.join(os.getcwd(), 'pong'), 'train_binary.html')
+  return send_from_directory(os.path.join(os.getcwd(), 'pong/static'), 'train.html')
 
-@app.route('/play')
-def play():
-  return send_from_directory(os.path.join(os.getcwd(), 'pong'), 'play.html')
+@app.route('/game.js')
+def gamejs():
+  return send_from_directory(os.path.join(os.getcwd(), 'pong/static'), 'game.js')
 
 @app.route('/api/game_data', methods=['POST'])
 def write_data():

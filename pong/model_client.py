@@ -5,7 +5,7 @@ import numpy as np
 from tensorflow_serving.apis import predict_pb2
 from tensorflow_serving.apis import prediction_service_pb2
 
-from load_data import scale_features
+from training.load_data import scale_features
 
 def make_prediction(data):
   channel = implementations.insecure_channel('localhost', 9000)

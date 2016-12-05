@@ -10,33 +10,39 @@ PONG_DB_NAME = 'pong'
 COLLECTION_NAME = 'game_data'
 BINARY_COLLECTION_NAME = 'game_data_binary'
 
-MAX_Y_POSITION = 400
-MIN_Y_POSITION = 0
-MAX_X_POSITION = 600
-MIN_X_POSITION = 0
-MAX_X_VELOCITY = 5
-MIN_X_VELOCITY = -5
-MAX_Y_VELOCITY = sqrt(50 - 9)
-MIN_Y_VELOCITY = -1 * sqrt(50 - 9)
-
 def min_max_scale(x, x_min, x_max):
-  return (x - x_min) / (x_max - x_min)
+  if x_max - x_min:
+    return (x - x_min) / (x_max - x_min)
+
+FEATURES = [
+  "ball_x_velocity",
+  "ball_y_velocity",
+  "ball_x_position",
+  "ball_y_position",
+  "paddle_position",
+]
+
+MAXES = {
+  "ball_x_velocity": 5,
+  "ball_y_velocity": sqrt(50 - 9),
+  "ball_x_position": 600,
+  "ball_y_position": 400,
+  "paddle_position": 400,
+}
+
+MINS = {
+  "ball_x_velocity": -5,
+  "ball_y_velocity": -1 * sqrt(50 - 9),
+  "ball_x_position": 0,
+  "ball_y_position": 0,
+  "paddle_position": 0,
+}
 
 def scale_features(row):
-  base = [
-    min_max_scale(row["ball_x_velocity"], MIN_X_VELOCITY, MAX_X_VELOCITY),
-    min_max_scale(row["ball_y_velocity"], MIN_Y_VELOCITY, MAX_Y_VELOCITY),
-    min_max_scale(row["ball_x_position"], MIN_X_POSITION, MAX_X_POSITION),
-    min_max_scale(row["ball_y_position"], MIN_Y_POSITION, MAX_Y_POSITION),
-    min_max_scale(row["paddle_position"], MIN_Y_POSITION, MAX_Y_POSITION)
-  ]
-  base.extend([
-    base[0] * base[1],
-    base[2] * base[3],
-    base[0] * base[1] * base[2] * base[3],
-    base[0] * base[1] * base[2] * base[3] * base[4]
-  ])
-  return base
+  linear_terms = [min_max_scale(row[feature], MINS[feature], MAXES[feature]) for feature in FEATURES]
+  quadratic_terms = [min_max_scale(row[feature1] * row[feature2], MINS[feature1] * MINS[feature2], MAXES[feature1] * MAXES[feature2]) for feature1 in FEATURES for feature2 in FEATURES]
+  cubic_terms = [min_max_scale(row[feature1] * row[feature2] * row[feature3], MINS[feature1] * MINS[feature2] * MINS[feature3], MAXES[feature1] * MAXES[feature2] * MAXES[feature3]) for feature1 in FEATURES for feature2 in FEATURES for feature3 in FEATURES]
+  return filter(lambda x: x is not None, linear_terms + quadratic_terms + cubic_terms)
 
 
 # Dataset class adapted from https://github.com/tensorflow/tensorflow/blob/r0.11/tensorflow/contrib/learn/python/learn/datasets/mnist.py

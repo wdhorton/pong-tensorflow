@@ -14,8 +14,8 @@ def main(_):
   training_set, test_set = make_training_and_test_sets(one_hot=True, binary=True)
 
   # Create the model
-  x = tf.placeholder(tf.float32, [None, 9])
-  W = tf.Variable(tf.zeros([9, 2]))
+  x = tf.placeholder(tf.float32, [None, 151])
+  W = tf.Variable(tf.zeros([151, 2]))
   b = tf.Variable(tf.zeros([2]))
   y = tf.matmul(x, W) + b
 

@@ -4,9 +4,18 @@
     <meta charset="utf-8">
     <title>Pong</title>
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
+    <link rel="stylesheet" href="/main.css"></link>
   </head>
   <body>
-    <canvas></canvas>
+    <h1>Pong Tensorflow</h1>
+    <div id="canvas-container">
+      <canvas></canvas>
+    </div>
+    <div class="instructions">
+      Use the up arrow to control the paddle. <br />
+      (You move down by default because the model being trained is binary--it will only move either up or down.)<br />
+      Or try <a href="/">playing the computer</a>!
+    </div>
     <script type="text/javascript" src="/game.js"></script>
   </body>
 </html>

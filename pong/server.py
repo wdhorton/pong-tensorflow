@@ -29,6 +29,10 @@ def train_binary():
 def gamejs():
   return send_from_directory(os.path.join(os.getcwd(), 'pong/static'), 'game.js')
 
+@app.route('/main.css')
+def maincss():
+  return send_from_directory(os.path.join(os.getcwd(), 'pong/static'), 'main.css')
+
 @app.route('/api/game_data', methods=['POST'])
 def write_data():
   data = request.get_json()
